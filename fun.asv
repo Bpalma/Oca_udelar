@@ -2,7 +2,6 @@ function [f, dx,dy] = fun(ecuacion, variables)
     % Convertir las variables de texto en símbolos simbólicos
     x = str2sym(variables(1));
     y = str2sym(variables(2));
-    r = str2sym(variables(3))
 
     % Convertir la ecuación de texto a una expresión simbólica
     f = sym(str2sym(ecuacion));
@@ -24,7 +23,9 @@ function [f, dx,dy] = fun(ecuacion, variables)
     a = 0 + dx ;
     b = 0 + dy ;
 
-    prim_eval = subs(ecuacion, [x, y], [a, b]);
+    syms x y r
+    f(x,y,r) = x^2 + 4 *y^2 - 12*x - 8*y +10;
+    prim_eval = subs(f(x,y,r), [x, y], [a, b]);
     disp(prim_eval)
 
     
