@@ -67,12 +67,12 @@ subs(fxy, [x,y] ,[nuev_a2,nuev_b2])
 
 %% segundo
 
-a = nuev_a2 + dx ;
-b = nuev_b2 + dy ;
+a = nuev_a2 + dx 
+b = nuev_b2 + dy 
 
 syms x y r
 f(x,y,r) = x^2 + 4 *y^2 - 12*x - 8*y +10;
-prim_eval = subs(f(x,y,r), [x, y], [a, b])
+prim_eval = subs(f(x,y,r), [x, y], [a, b]);
 disp(prim_eval)
 
 
@@ -99,7 +99,7 @@ b = nuev_b + dy ;
 
 syms x y r
 f(x,y,r) = x^2 + 4 *y^2 - 12*x - 8*y +10;
-prim_eval = subs(f(x,y,r), [x, y], [a, b])
+prim_eval = subs(f(x,y,r), [x, y], [a, b]);
 disp(prim_eval)
 
 

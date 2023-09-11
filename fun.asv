@@ -50,17 +50,15 @@ function [f, dx,dy] = fun(ecuacion, variables)
     
     prim_eval = subs(f, [x, y], [a, b]);
     valor_evaluado = subs(prim_eval, [x, y], [A(end), B(end)]);
-    disp(valor_evaluado)
-    
     resol = diff(valor_evaluado) == 0;
     disp(resol)
     solucion = solve(resol, r);
     disp(solucion)
     
-    nuev_a = subs(dx, [x, r], [A(end), r(end)]); %solo para la version analitica
-    nuev_b = subs(dy, [y, r], [B(end), r(end)]); %solo para la version analitica
+    nuev_a = subs(dx, [x, r], [A(end), R(end)])< %solo para la version analitica
+    nuev_b = subs(dy, [y, r], [B(end), R(end)]); %solo para la version analitica
     nuev_ec = subs(f, [x, y], [nuev_a, nuev_b]);
-    %fprintf ("El x para la funcion es ", nuev_a )
+    fprintf ("El x para la funcion es ", nuev_a )
     %fprintf ("El y para la funcion es ", nuev_b )
     %fprintf ("el nuevo minimo es ", nuev_ec )
     

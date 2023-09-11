@@ -36,7 +36,8 @@ fprintf ("el valor de la regla de wolfe para la funcion exponencial es es %d\n\n
 
 %%
 %2 Descenso por Gradiente y Conjugado
- 
+clc, clearvars, close all
+
 % funcion 
 ec =  'x^2 + 4 *y^2 - 12*x - 8*y +10'; %'2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10';
 variables = ['x','y','r'];

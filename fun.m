@@ -37,34 +37,35 @@ function [f, dx,dy] = fun(ecuacion, variables)
     %resol = diff(valor_evaluado) == 0;
     %solucion = solve(resol, r);
     %disp(solucion)
-    max = 1;
+    max = 10;
     
     A = [ 0 ];
     B = [ 0 ];
     R = [ 0 ];
     
+    
     for iter = 1:max
-   
-    a = A(end) + dx;
-    b = B(end) + dy;
+        a = A(end) + dx;
+        b = B(end) + dy;
     
-    prim_eval = subs(f, [x, y], [a, b]);
-    valor_evaluado = subs(prim_eval, [x, y], [A(end), B(end)]);
-    resol = diff(valor_evaluado) == 0;
-    disp(resol)
-    solucion = solve(resol, r);
-    disp(solucion)
+        prim_eval = subs(f, [x, y], [a, b]);
+        valor_evaluado = subs(prim_eval, [x, y], [A(end), B(end)]);
+        resol = diff(valor_evaluado) == 0;
+        %disp(resol)
+        solucion = solve(resol, r);
+        %disp(solucion)
+        R = [ R  solucion];
     
-    nuev_a = subs(dx, [x, r], [A(end), R(end)]); %solo para la version analitica
-    nuev_b = subs(dy, [y, r], [B(end), R(end)]); %solo para la version analitica
-    nuev_ec = subs(f, [x, y], [nuev_a, nuev_b]);
-    %fprintf ("El x para la funcion es ", nuev_a )
-    %fprintf ("El y para la funcion es ", nuev_b )
-    %fprintf ("el nuevo minimo es ", nuev_ec )
-    
-    A = [ A nuev_a];
-    B = [ B nuev_b];
-    R = [ R  solucion];
+        nuev_a = subs(a, [x, r], [A(end), R(end)]); %solo para la version analitica
+        nuev_b = subs(b, [y, r], [B(end), R(end)]); %solo para la version analitica
+        nuev_ec = subs(f, [x, y], [nuev_a, nuev_b]);
+        fprintf ("El x para la funcion es %.2f\n", nuev_a )
+        fprintf ("El y para la funcion es %.2f\n", nuev_b )
+        fprintf ("el nuevo minimo es %.2f\n", nuev_ec )
+
+        A = [ A nuev_a];
+        B = [ B nuev_b];
+
     end
     
     
