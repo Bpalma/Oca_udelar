@@ -39,7 +39,7 @@ fprintf ("el valor de la regla de wolfe para la funcion exponencial es es %d\n\n
 clc, clearvars, close all
 
 % funcion 
-ec =  'x^2 + 4 *y^2 - 12*x - 8*y +10'; %'2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10';
+ec =  '2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10'; % 'x^2 + 4 *y^2 - 12*x - 8*y +10';
 variables = ['x','y','r'];
 [f, dx,dy] = fun(ec, variables);
 

@@ -59,48 +59,16 @@ function [f, dx,dy] = fun(ecuacion, variables)
         nuev_a = subs(a, [x, r], [A(end), R(end)]); %solo para la version analitica
         nuev_b = subs(b, [y, r], [B(end), R(end)]); %solo para la version analitica
         nuev_ec = subs(f, [x, y], [nuev_a, nuev_b]);
-        fprintf ("El x para la funcion es %.2f\n", nuev_a )
-        fprintf ("El y para la funcion es %.2f\n", nuev_b )
-        fprintf ("el nuevo minimo es %.2f\n", nuev_ec )
+        %fprintf ("El x para la funcion es %.2f\n", nuev_a )
+        %fprintf ("El y para la funcion es %.2f\n", nuev_b )
+        %fprintf ("el nuevo minimo es %.2f\n", nuev_ec )
 
-        A = [ A nuev_a];
-        B = [ B nuev_b];
+        A = [ A nuev_a]
+        B = [ B nuev_b]
 
     end
     
     
-    
-    %for iter = 1:max
-    %nuev_a = %subs(dx, [x, r], [0, m(end)]);
-    %nuev_b = %subs(dy, [y, r], [0, m(end)]);
-    
-    %nuev_ec = subs(f, [x, y], [nuev_a, nuev_b]);
-    %fprintf ("El x para la funcion es %.2f\n", nuev_a )
-    %fprintf ("El y para la funcion es %.2f\n", nuev_b )
-    %fprintf ("el nuevo minimo es %.2f\n", nuev_ec )
-    
-    %a = A(end) + dx;
-    %b = B(end) + dy;
-    
-    %a = nuev_a + dx;
-    %b = nuev_b + dy;
-    
-    %prim_eval = subs(f, [x, y], [a, b]);
-    %disp(prim_eval);
-
-    %valor_evaluado = subs(prim_eval, [x, y], [nuev_a, nuev_b]);
-    %disp(valor_evaluado);
-    
-    %[a, b, m] = biparticion(-5, 5, 1e-6, @(u) subs(diff(valor_evaluado,r), [r], [u]));
-    %resol = diff(valor_evaluado) == 0;
-    %solucion = solve(resol, r);
-    %fprintf ("el nuevo tau es %.2f\n", solucion)
-    %fprintf ("El mu optimo para la funcion es %d\n\n", m(end) );
-    
-    %version solucion analitica
-    %nuev_a = subs(dx, [x, r], [nuev_a,solucion]);
-    %nuev_b = subs(dy, [y, r], [nuev_b,solucion]);
-    %end
     
     
 end
