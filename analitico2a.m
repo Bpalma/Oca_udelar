@@ -1,0 +1,30 @@
+clc, clearvars, close all
+% Definir las ecuaciones
+
+ecuacion = '2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10';
+variables = ['x','y'];
+x = str2sym(variables(1));
+y = str2sym(variables(2));
+f = sym(str2sym(ecuacion));
+
+% Calcular la derivada de la ecuación
+dx = diff(f, x);
+dy = diff(f, y);
+
+%e1 = sym(str2sym('4*x + 2*y - 12'));
+%e2 = sym(str2sym('2*x + 10*y - 8'));
+e1 = sym(dx);
+e2 = sym(dy);
+
+eq1 = e1 == 0;
+eq2 = e2 == 0;
+
+% Resolver el sistema de ecuaciones
+sol = solve([eq1, eq2], str2sym('x'), str2sym('y'));
+
+% Mostrar la solución
+x_sol = sol.x;
+y_sol = sol.y;
+
+disp(['x = ', char(x_sol)]);
+disp(['y = ', char(y_sol)]);
