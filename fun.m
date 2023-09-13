@@ -63,8 +63,12 @@ function [f, dx,dy] = fun(ecuacion, variables)
         %fprintf ("El y para la funcion es %.2f\n", nuev_b )
         %fprintf ("el nuevo minimo es %.2f\n", nuev_ec )
 
-        A = [ A nuev_a]
-        B = [ B nuev_b]
+        %[a, b, m] = biparticion(0, 2, 1e-6, @(u) subs(diff(valor_evaluado,r), [r], [u]));
+        %fprintf ("El mu optimo para la funcion es %d\n\n", m(end) )
+        
+        
+        A = [ A nuev_a];
+        B = [ B nuev_b];
 
     end
     

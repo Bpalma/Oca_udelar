@@ -10,7 +10,6 @@ format long;
 
 fprintf ("El mu optimo para la funcion errmu es %d\n\n", r(end) )
 
-
 format long;
 [c, d, t] = regla_wolfe (0, 1,  @(u) errMu(data,u),@(u) errMup(data,u));
 
@@ -41,7 +40,9 @@ clc, clearvars, close all
 % funcion 
 ec =  '2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10'; % 'x^2 + 4 *y^2 - 12*x - 8*y +10';
 variables = ['x','y','r'];
-[f, dx,dy] = fun(ec, variables);
+%[f, dx,dy] = fun(ec, variables);
+%[f, dx,dy] = funxy(ec, variables);
+[f, dx,dy] = funxyc(ec, variables);
 
 %%
 syms r
