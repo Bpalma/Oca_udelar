@@ -3,7 +3,7 @@ format short
 
 %defino la funcion y las variables 
 syms x y r
-ecuacion = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10;
+ecuacion = (1-x)^2 + 100*(y-x^2)^2; %2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10;
 
 fx = inline(ecuacion); %fx = @(u, v) subs(ecuacion, [x, y], [u, v]); %otra opcion de evaluacion
 fobj= @(x) fx(x(:,1), x(:,2));
@@ -17,14 +17,22 @@ dx = @(x) gx(x(:,1), x(:,2));
 
 %parametros del algoritmo
 
-x0 = [3 3]; %defino vector inicial
-maxiter = 20; %maximo de iteraciones
+x0 = [-1 -1]; %defino vector inicial [1 1]
+maxiter = 50; %maximo de iteraciones
 tol = 1e-6; % maximo error
 iter = 1; %contador
 X = []; %vector con soluciones
 vx = []; %valor x para grafico
 vy = []; %valor y para grafico
 %algoritmo
+
+
+%probar
+% Parámetros iniciales para la bisección
+lambda_min = 0;
+lambda_max = 1;
+tau = (lambda_min + lambda_max) / 2;
+%
 
 while norm(dx(x0))> tol && iter< maxiter
     X = [X,x0];
@@ -33,15 +41,19 @@ while norm(dx(x0))> tol && iter< maxiter
     Gi = -dx(x0);
     
     %
-    obj = fobj(transpose(Gi*r));
-    obj = diff(obj,r);
-    obj2 = inline(obj);
-    fobj2= @(u) obj2(u);
+    %obj = fobj(x0+transpose(Gi*tau));
+    %obj2 = inline(obj);
+    %fobj2= @(u) obj2(u);
     
-
+    
+    %b=probar biseccion
+    while fobj(x0+tau*Gi) >= fobj(x0) + 0.01*tau*(-1*transpose(Gi)*Gi)
+        tau = tau / 2;
+    end
+    
     %busqueda no lineal de x
-    [A, B, R] = biparticion(-10,10, tol, fobj2); %parametro de busqueda
-    tau= R(end);
+    %[A, B, R] = biparticion(0,1, tol, fobj2); %parametro de busqueda
+    %tau= R(end);
     Xnue = x0+tau.*Gi'; %actualiza valor de X
     x0 = Xnue; %guarda valor de X
     iter = iter+1; %actualiza la iteracion
@@ -94,7 +106,7 @@ format short
 
 %defino la funcion y las variables 
 syms x y r
-ecuacion = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10;
+ecuacion = (1-x)^2 + 100*(y-x^2)^2; %2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10;
 
 fx = inline(ecuacion); %fx = @(u, v) subs(ecuacion, [x, y], [u, v]); %otra opcion de evaluacion
 fobj= @(x) fx(x(:,1), x(:,2));
