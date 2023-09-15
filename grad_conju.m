@@ -20,16 +20,19 @@ Hx = inline(Hess);
 
 %parametros del algoritmo
 
-x0 = [0 0]; %defino vector inicial
+x0 = [-6 -8]; %defino vector inicial
 maxiter = 4; %maximo de iteraciones
 tol = 1e-6; % maximo error
 iter = 1; %contador
-X = []; %vector con soluciones
+S = [];
+vx = []; %vector con soluciones
+vy = []; 
 
 %algoritmo
 Dir = 0; %direccion inicial
 Gpr = -dx(x0); %derivada inicial
 
+%verificacion para que la norma evaluada no haga que el valor de beta sea indeterminacion 
 if norm(Gpr) == 0
     disp('cambia x0');
     x0 = input('Nuevo valor del vector inicial x0');
@@ -38,7 +41,9 @@ if norm(Gpr) == 0
 end
 
 while norm(dx(x0))> tol && iter< maxiter
-    X = [X,x0];
+    S = [S,x0];
+    vx = [vx,x0(1)];
+    vy = [vy,x0(2)];
     Gi = -dx(x0);
     H = Hx(x0);
     beta = norm(Gi).^2./norm(Gpr).^2; %Polak Ribiere
@@ -55,8 +60,61 @@ while norm(dx(x0))> tol && iter< maxiter
     iter = iter+1; %actualiza la iteracion
 end
 
+vx = [vx,x0(1)];
+vy = [vy,x0(2)];
 
 %%% Devolucion de solucion
 fprintf('La solucion optima es x = [%f, %f]\n',x0(1),x0(2));
 fprintf('El valor optimo es f(x) = %f \n',fobj(x0));
 
+%% GRAFICO de la funcion
+x = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para x
+y = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para y
+[X, Y] = meshgrid(x, y);
+Ze = 2*X.^2 + 5*Y.^2 + 2*X.*Y - 12*X - 8*Y + 10;
+
+syms x y
+Z = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10;
+% Inicializar un arreglo para almacenar los valores de Z en los puntos (vx, vy)
+Z_values = zeros(size(vx));
+
+% Calcular Z en cada punto (vx, vy)
+for i = 1:length(vx)
+    Z_values(i) = subs(Z, [x, y], [vx(i), vy(i)]);
+end
+
+%%
+% Crear el gráfico de superficie
+figure;
+surf(X, Y, Ze);
+xlabel('x');
+ylabel('y');
+zlabel('f(x, y)');
+title('Gráfico de 2x^2 + 5y^2 + 2xy - 12x - 8y + 10');
+
+
+% Agregar el recorrido del gráfico
+hold on;
+plot3(vx, vy, Z_values, '-.','Color','r', 'MarkerSize', 50,'LineWidth',1 );
+hold off;
+
+%%
+figure;
+% Crear el gráfico de curvas de nivel
+contour(X, Y, Ze, 'LineWidth', 0.5);
+colorbar; % Mostrar la barra de colores (valores de la función)
+
+% Etiquetas de ejes y título
+xlabel('x1');
+ylabel('x2');
+title('Curvas de Nivel de 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10');
+
+% Agregar el recorrido del gráfico
+hold on;
+plot3(vx, vy, Z_values, '-','Color','r', 'MarkerSize', 50,'LineWidth',1 );
+hold off;
+
+% Añadir un punto para resaltar el mínimo global
+hold on;
+plot(x0(1), x0(2), 'blue', 'MarkerSize', 50, 'LineWidth', 2);
+hold off;
