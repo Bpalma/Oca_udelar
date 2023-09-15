@@ -17,8 +17,8 @@ dx = @(x) gx(x(:,1), x(:,2));
 
 %parametros del algoritmo
 
-x0 = [0 1]; %defino vector inicial [1 1]
-maxiter = 30; %maximo de iteraciones
+x0 = [1 4]; %defino vector inicial [1 1]
+maxiter = 25; %maximo de iteraciones
 tol = 1e-6; % maximo error
 iter = 1; %contador
 X = []; %vector con soluciones
@@ -55,6 +55,9 @@ while norm(dx(x0))> tol && iter< maxiter
     x0 = Xnue; %guarda valor de X
     iter = iter+1; %actualiza la iteracion
 end
+
+vx = [vx,x0(1)]; %guarda valores de x para grafico
+vy = [vy,x0(2)]; %guarda valores de y para grafico
 
 %%% Devolucion de solucion
 fprintf('La solucion optima es x = [%f, %f]\n',x0(1),x0(2));
@@ -128,7 +131,7 @@ title('Curvas de Nivel de 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10');
 
 % Agregar el recorrido del gráfico
 hold on;
-plot3(vx, vy, Z_values, '-','Color','r', 'MarkerSize', 50,'LineWidth',1 );
+plot3(vx, vy, Z_values, '-','Color','k','Marker','>','MarkerEdgeColor','1.00,0.41,0.16','MarkerFaceColor','0.07,0.62,1.00','MarkerSize', 5,'LineWidth',1 );
 hold off;
 
 % Añadir un punto para resaltar el mínimo global
