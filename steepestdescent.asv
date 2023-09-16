@@ -17,8 +17,8 @@ dx = @(x) gx(x(:,1), x(:,2));
 
 %parametros del algoritmo
 
-x0 = [6 -2]; %defino vector inicial [1 1]
-maxiter = 35; %maximo de iteraciones
+x0 = [1 1]; %defino vector inicial [1 1]
+maxiter = 25; %maximo de iteraciones
 tol = 1e-6; % maximo error
 iter = 1; %contador
 X = []; %vector con soluciones
@@ -82,12 +82,19 @@ for i = 1:length(vx)
 end
 
 %% Calculo de orden y convergencia
+
+orden = []
+
 for i = 1:length(vx)-1
     Num = norm(subs(Z, [x, y], [vx(i+1), vy(i+1)])-(-8.222208));
     Den = norm(subs(Z, [x, y], [vx(i), vy(i)])-(-8.222208))^1;
     velocidad(i) = Num/Den;
     
 end
+
+fprintf('El orden de convergencia de la funcion f(x) es = %f \n',velocidad(end));
+
+fprintf('la funcion f(x) tiene velocidad = %f \n',velocidad(end));
 
 % Graficar las diferencias respecto al valor analitico
 plot(velocidad, 'MarkerSize', 5, 'LineWidth', 2);
@@ -98,7 +105,6 @@ ylabel('Error');
 
 % Título del gráfico
 title('Error Absoluto vs iteraciones');
-
 
 
 %%
