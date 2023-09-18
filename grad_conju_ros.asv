@@ -1,0 +1,117 @@
+clc, clearvars, close all
+format short
+
+%defino la funcion y las variables 
+syms x y
+ecuacion = (1 - x)^2 + 100 * (y - x^2)^2;
+
+fx = inline(ecuacion); %fx = @(u, v) subs(ecuacion, [x, y], [u, v]); %otra opcion de evaluacion
+fobj= @(x) fx(x(:,1), x(:,2));
+
+%defino la derivada de la funcion
+derivada = gradient(ecuacion);
+gx = inline(derivada); %la convierto en una funcion evaluable
+dx = @(x) gx(x(:,1), x(:,2));
+
+%defino la hessiana de la funcion
+Hess = hessian(ecuacion);
+Hx = matlabFunction(Hess, 'Vars', [x, y]);
+
+%parametros del algoritmo
+
+x0 = [-1.5 3]; %defino vector inicial
+maxiter = 3; %maximo de iteraciones
+tol = 1e-6; % maximo error
+iter = 1; %contador
+S = [];
+vx = []; %vector con soluciones
+vy = []; 
+
+%algoritmo
+Dir = 0; %direccion inicial
+Gpr = -dx(x0); %derivada inicial
+
+%verificacion para que la norma evaluada no haga que el valor de beta sea indeterminacion 
+if norm(Gpr) == 0
+    disp('cambia x0');
+    x0 = input('Nuevo valor del vector inicial x0');
+    Gpr = -dx(x0);
+
+end
+
+while norm(dx(x0))> tol && iter< maxiter
+    S = [S,x0];
+    vx = [vx,x0(1)];
+    vy = [vy,x0(2)];
+    Gi = -dx(x0);
+    H = Hx(x0(1), x0(2));
+    
+    betafr = norm(Gi)'*(norm(Gi)-norm(Gpr)) /norm(Gpr).^2; %Fletcher-Reeves
+    Dir = Gi + betafr.*Dir;
+    
+    %busqueda no lineal de x
+    lambda = Gi'*Gi./ (Dir'*H*Dir); %parametro de busqueda
+    Xnue = x0+lambda.*Dir'; %actualiza valor de X
+    x0 = Xnue; %guarda valor de X
+    Gpr = Gi; %actualiza el gradiente
+    iter = iter+1; %actualiza la iteracion
+end
+
+vx = [vx,x0(1)];
+vy = [vy,x0(2)];
+
+%%% Devolucion de solucion
+fprintf('La solucion optima es x = [%f, %f]\n',x0(1),x0(2));
+fprintf('El valor optimo es f(x) = %f \n',fobj(x0));
+
+%% GRAFICO de la funcion
+x = linspace(-2.5, 2.5, 11); % Genera 11 puntos en el rango de -2.5 a 2.5 para x
+y = linspace(-1, 5, 7); % Genera 7 puntos en el rango de -1 a 5 para y
+[X, Y] = meshgrid(x, y);
+Ze = (1 - X).^2 + 100 * (Y - X.^2).^2;
+
+syms x y
+Z = (1 - x).^2 + 100 * (y - x.^2).^2;
+% Inicializar un arreglo para almacenar los valores de Z en los puntos (vx, vy)
+Z_values = zeros(size(vx));
+
+% Calcular Z en cada punto (vx, vy)
+for i = 1:length(vx)
+    Z_values(i) = subs(Z, [x, y], [vx(i), vy(i)]);
+end
+
+%%
+% Crear el gráfico de superficie
+figure;
+surf(X, Y, Ze);
+xlabel('x');
+ylabel('y');
+zlabel('f(x, y)');
+title('Gráfico de (1 - X)^2 + 100 * (Y - X^2)^2');
+
+
+% Agregar el recorrido del gráfico
+hold on;
+plot3(vx, vy, Z_values, '-.','Color','r', 'MarkerSize', 50,'LineWidth',1 );
+hold off;
+
+%%
+figure;
+% Crear el gráfico de curvas de nivel
+contour(X, Y, Ze, 'LineWidth', 0.5);
+colorbar; % Mostrar la barra de colores (valores de la función)
+
+% Etiquetas de ejes y título
+xlabel('x1');
+ylabel('x2');
+title('Curvas de Nivel de (1 - X)^2 + 100 * (Y - X^2)^2');
+
+% Agregar el recorrido del gráfico
+hold on;
+plot3(vx, vy, Z_values, '-','Color','r', 'MarkerSize', 50,'LineWidth',1 );
+hold off;
+
+% Añadir un punto para resaltar el mínimo global
+hold on;
+plot(x0(1), x0(2), 'blue', 'MarkerSize', 50, 'LineWidth', 2);
+hold off;
