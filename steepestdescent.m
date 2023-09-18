@@ -1,154 +1,6 @@
 clc, clearvars, close all
 format short
 
-%defino la funcion y las variables 
-syms x y r
-ecuacion = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10; %(1-x)^2 + 100*(y-x^2)^2;
-
-fx = inline(ecuacion); %fx = @(u, v) subs(ecuacion, [x, y], [u, v]); %otra opcion de evaluacion
-fobj= @(x) fx(x(:,1), x(:,2));
-
-
-%defino la derivada de la funcion
-derivada = gradient(ecuacion);
-gx = inline(derivada); %la convierto en una funcion evaluable
-dx = @(x) gx(x(:,1), x(:,2));
-
-
-%parametros del algoritmo
-
-x0 = [1 1]; %defino vector inicial [1 1]
-maxiter = 25; %maximo de iteraciones
-tol = 1e-6; % maximo error
-iter = 1; %contador
-X = []; %vector con soluciones
-vx = []; %valor x para grafico
-vy = []; %valor y para grafico
-%algoritmo
-
-
-% Parámetros iniciales para la bisección
-lambda_min = 0;
-lambda_max = 1;
-tau = (lambda_min + lambda_max) / 2;
-%
-
-while norm(dx(x0))> tol && iter< maxiter
-    X = [X,x0];
-    vx = [vx,x0(1)]; %guarda valores de x para grafico
-    vy = [vy,x0(2)]; %guarda valores de y para grafico
-    Gi = -dx(x0);
-    
-    %
-    %obj = fobj(x0+transpose(Gi*tau));
-    %obj2 = inline(obj);
-    %fobj2= @(u) obj2(u);
-    
-    
-    %b=probar biseccion
-    while fobj(x0+tau*Gi) >= fobj(x0) + 0.01*tau*(-1*transpose(Gi)*Gi)
-        tau = tau / 2;
-    end
-    
-    %busqueda no lineal de x
-    Xnue = x0+tau.*Gi'; %actualiza valor de X
-    x0 = Xnue; %guarda valor de X
-    iter = iter+1; %actualiza la iteracion
-end
-
-vx = [vx,x0(1)]; %guarda valores de x para grafico
-vy = [vy,x0(2)]; %guarda valores de y para grafico
-
-%%% Devolucion de solucion
-fprintf('La solucion optima es x = [%f, %f]\n',x0(1),x0(2));
-fprintf('El valor optimo es f(x) = %f \n',fobj(x0));
-
-
-%% GRAFICO de la funcion
-x = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para x
-y = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para y
-[X, Y] = meshgrid(x, y);
-Ze = 2*X.^2 + 5*Y.^2 + 2*X.*Y - 12*X - 8*Y + 10;
-
-syms x y
-Z = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10;
-% Inicializar un arreglo para almacenar los valores de Z en los puntos (vx, vy)
-Z_values = zeros(size(vx));
-velocidad = zeros(size(vx));
-
-% Calcular Z en cada punto (vx, vy)
-for i = 1:length(vx)
-    Z_values(i) = subs(Z, [x, y], [vx(i), vy(i)]);
-end
-
-%% Calculo de orden y convergencia
-
-orden = []
-
-for i = 1:length(vx)-1
-    Num = norm(subs(Z, [x, y], [vx(i+1), vy(i+1)])-(-8.222208));
-    Den = norm(subs(Z, [x, y], [vx(i), vy(i)])-(-8.222208))^1;
-    velocidad(i) = Num/Den;
-    
-end
-
-fprintf('El orden de convergencia de la funcion f(x) es = %f \n',1);
-
-fprintf('la funcion f(x) tiene velocidad = %f \n',velocidad(end-1));
-
-% Graficar las diferencias respecto al valor analitico
-plot(velocidad, 'MarkerSize', 5, 'LineWidth', 2);
-
-% Etiquetas de los ejes
-xlabel('Iteraciones');
-ylabel('Error');
-
-% Título del gráfico
-title('Error Absoluto vs iteraciones');
-
-
-%%
-
-% Crear el gráfico de superficie
-figure;
-surf(X, Y, Ze);
-xlabel('x');
-ylabel('y');
-zlabel('f(x, y)');
-title('Gráfico de 2x^2 + 5y^2 + 2xy - 12x - 8y + 10');
-
-
-% Agregar el punto mínimo al gráfico
-hold on;
-plot3(vx, vy, Z_values, '-.','Color','r', 'MarkerSize', 10,'LineWidth',2 );
-hold off;
-
-
-%%
-figure;
-% Crear el gráfico de curvas de nivel
-contour(X, Y, Ze, 'LineWidth', 0.5);
-colorbar; % Mostrar la barra de colores (valores de la función)
-
-% Etiquetas de ejes y título
-xlabel('x1');
-ylabel('x2');
-title('Curvas de Nivel de 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10');
-
-% Agregar el recorrido del gráfico
-hold on;
-plot3(vx, vy, Z_values, '-','Color','k','Marker','>','MarkerEdgeColor','1.00,0.41,0.16','MarkerFaceColor','0.07,0.62,1.00','MarkerSize', 5,'LineWidth',1 );
-hold off;
-
-% Añadir un punto para resaltar el mínimo global
-hold on;
-plot(x0(1), x0(2), 'blue', 'MarkerSize', 50, 'LineWidth', 2);
-hold off;
-
-
-
-
-
 %% Metodo analitico
 
 clc, clearvars, close all
@@ -194,8 +46,167 @@ while norm(dx(x0))> tol && iter< maxiter
     iter = iter+1; %actualiza la iteracion
 end
 
-fprintf('La solucion optima es x = [%f, %f]\n',x0(1),x0(2));
-fprintf('El valor optimo es f(x) = %f \n',fobj(x0));    
+fprintf('La solucion optima por el metodo analitico es es x = [%f, %f]\n',x0(1),x0(2));
+fprintf('El valor optimo por el metodo analitico es f(x) = %f \n\n',fobj(x0)); 
+
+%%
+
+
+%defino la funcion y las variables 
+syms x y r
+ecuacion = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y +10; %(1-x)^2 + 100*(y-x^2)^2;
+
+fx = inline(ecuacion); %fx = @(u, v) subs(ecuacion, [x, y], [u, v]); %otra opcion de evaluacion
+fobj= @(x) fx(x(:,1), x(:,2));
+
+
+%defino la derivada de la funcion
+derivada = gradient(ecuacion);
+gx = inline(derivada); %la convierto en una funcion evaluable
+dx = @(x) gx(x(:,1), x(:,2));
+
+
+%parametros del algoritmo
+
+x0 = [1 1]; %defino vector inicial [1 1]
+maxiter = 40; %maximo de iteraciones
+tol = 1e-6; % maximo error
+iter = 1; %contador
+X = []; %vector con soluciones
+vx = []; %valor x para grafico
+vy = []; %valor y para grafico
+%algoritmo
+
+
+% Parámetros iniciales para la bisección
+lambda_min = 0;
+lambda_max = 1;
+tau = (lambda_min + lambda_max) / 2;
+iter2 = 1;
+%
+
+while norm(dx(x0))> tol && iter< maxiter
+    X = [X,x0];
+    vx = [vx,x0(1)]; %guarda valores de x para grafico
+    vy = [vy,x0(2)]; %guarda valores de y para grafico
+    Gi = -dx(x0);
+    
+    %
+    %obj = fobj(x0+transpose(Gi*tau));
+    %obj2 = inline(obj);
+    %fobj2= @(u) obj2(u);
+    
+    %b=probar biseccion
+    while fobj(x0+tau*Gi) >= fobj(x0) + 0.01*tau*(-1*transpose(Gi)*Gi)
+        if iter2< maxiter
+            tau = tau / 2;
+            iter2 = iter2 +1;
+        end
+        if iter2 == maxiter
+            break
+        end
+    end
+    
+    %busqueda no lineal de x
+    Xnue = x0+tau.*Gi'; %actualiza valor de X
+    x0 = Xnue; %guarda valor de X
+    iter = iter+1; %actualiza la iteracion
+end
+
+vx = [vx,x0(1)]; %guarda valores de x para grafico
+vy = [vy,x0(2)]; %guarda valores de y para grafico
+
+%%% Devolucion de solucion
+fprintf('El punto inicial para x = [%f, %f]\n',vx(1),vy(1));
+fprintf('La solucion optima por biparticion es x = [%f, %f]\n',x0(1),x0(2));
+fprintf('El valor optimo por biparticion es f(x) = %f \n\n',fobj(x0));
+
+
+%% GRAFICO de la funcion
+x = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para x
+y = linspace(-10, 10, 100); % Genera 100 puntos en el rango de -10 a 10 para y
+[X, Y] = meshgrid(x, y);
+Ze = 2*X.^2 + 5*Y.^2 + 2*X.*Y - 12*X - 8*Y + 10;
+
+syms x y
+Z = 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10;
+% Inicializar un arreglo para almacenar los valores de Z en los puntos (vx, vy)
+Z_values = zeros(size(vx));
+velocidad = zeros(size(vx));
+
+% Calcular Z en cada punto (vx, vy)
+for i = 1:length(vx)
+    Z_values(i) = subs(Z, [x, y], [vx(i), vy(i)]);
+end
+
+%% Calculo de orden y convergencia
+
+for i = 1:length(vx)-1
+    Num = norm(subs(Z, [x, y], [vx(i+1), vy(i+1)])-(-8.222208));
+    Den = norm(subs(Z, [x, y], [vx(i), vy(i)])-(-8.222208))^0;
+    % con p=2 la serie no converge, su ultimo valor es 576
+    % con p=0 la serie tiende a cero
+    velocidad(i) = Num/Den;
+    
+end
+
+fprintf('El orden de convergencia de la funcion f(x) es = %f \n',1);
+fprintf('la funcion f(x) tiene velocidad = %f \n',velocidad(end-1));
+
+% Graficar las diferencias respecto al valor analitico
+%plot(velocidad, 'MarkerSize', 5, 'LineWidth', 2);
+
+% Etiquetas de los ejes
+%xlabel('Iteraciones');
+%ylabel('Error');
+
+% Título del gráfico
+%title('Error Absoluto vs iteraciones');
+
+
+%%
+
+% Crear el gráfico de superficie
+figure;
+surf(X, Y, Ze);
+xlabel('x');
+ylabel('y');
+zlabel('f(x, y)');
+title('Gráfico de 2x^2 + 5y^2 + 2xy - 12x - 8y + 10');
+
+
+% Agregar el punto mínimo al gráfico
+hold on;
+plot3(vx, vy, Z_values, '-.','Color','r', 'MarkerSize', 10,'LineWidth',2 );
+hold off;
+
+
+%%
+figure;
+% Crear el gráfico de curvas de nivel
+contour(X, Y, Ze, 'LineWidth', 0.5);
+colorbar; % Mostrar la barra de colores (valores de la función)
+
+% Etiquetas de ejes y título
+xlabel('x1');
+ylabel('x2');
+title('Curvas de Nivel de 2*x^2 + 5*y^2 + 2*x*y - 12*x - 8*y + 10');
+
+% Agregar el recorrido del gráfico
+hold on;
+plot3(vx, vy, Z_values, '-','Color','k','Marker','>','MarkerEdgeColor','1.00,0.41,0.16','MarkerFaceColor','0.07,0.62,1.00','MarkerSize', 5,'LineWidth',1 );
+hold off;
+
+% Añadir un punto para resaltar el mínimo global
+hold on;
+plot(x0(1), x0(2), 'blue', 'MarkerSize', 50, 'LineWidth', 2);
+hold off;
+
+
+
+
+
+   
     
     
     
